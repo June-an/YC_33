@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:c="http://www.springframework.org/schema/c"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+   
+	  
+	<!-- 配置bean 这样spring容器就可以创建对象 -->
+	<bean id="student" class="com.yc.bean.Student"></bean>
+	
+	<!-- 通过spring ioc创建dao -->
+	<bean id="studentDao" class="com.yc.dao.impl.StudentDaoImpl"></bean>
+	
+	<!-- 通过spring ioc创建biz -->
+	<bean id="studentBiz" class="com.yc.biz.impl.StudentImpl">
+		<!-- 通过spring的di机制将上面的studentDao的对象注入到studentBiz对象中 -->
+		<property name="studentDao" ref="studentDao" ></property>
+	</bean>
+	
+	<bean id="personBmiFilter" class="com.yc.bean.PersonBmiFilter"></bean>
+	<bean id="personBmiTool" class="com.yc.bean.PersonBmiTool"></bean>
+	
+	<bean id="container" class="com.yc.bean.Container">
+		<!-- <property name="filter" ref="personBmiFilter" ></property> -->
+		<property name="measurable" ref="personBmiTool" ></property>
+	</bean>
+	
+	<bean id="product" class="com.yc.bean.Priduct"></bean>
+	
+	
+	<!-- 静态工厂方法创建Bean -->
+	<bean id="mp" class="com.yc.bean.MyProperties" factory-method="getInstance"></bean>
+	
+	<!-- 实例工厂方法创建Bean -->
+	<bean id="appleFactory" class="com.yc.bean.AppleFactory">
+	</bean>
+	<bean id="apple"
+    factory-bean="appleFactory"
+    factory-method="createAppleInstance"/>
+	
+	
+	<!-- 构造方法di -->
+	<bean id="cd" class="com.yc.bean.ConstructorDi">
+	<!-- 
+		<constructor-arg value="100"></constructor-arg>
+		<constructor-arg value="abc"></constructor-arg>
+		<constructor-arg ref="apple"></constructor-arg>
+		 -->
+
+		<constructor-arg name="x" value="100"></constructor-arg>
+		<constructor-arg name="y" value="abc"></constructor-arg>
+		<constructor-arg name="apple" ref="apple"></constructor-arg>
+			<!--  
+		<constructor-arg index="x" value="100"></constructor-arg>
+		<constructor-arg index="y" value="abc"></constructor-arg>
+		<constructor-arg index="apple" ref="apple"></constructor-arg>-->
+	</bean>
+	
+	
+	
+	<bean id="myDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+        destroy-method="close"
+        p:driverClassName="com.mysql.jdbc.Driver"
+        p:url="jdbc:mysql://localhost:3306/test"
+        p:username="root"
+        p:password="a"/>
+	
+	
+	<!-- innerbean -->
+	<bean id="innerBean" class="com.yc.bean.InnerBean">
+		<property name="student">
+			<bean class="com.yc.bean.Student">
+				<property name="id" value="123"></property>
+				<property name="name" value="smith"></property>
+			</bean>
+		</property> 
+	</bean>
+	
+	<bean id="collectionBean" class="com.yc.bean.CollectionBean">
+		<property name="name">
+			<list>
+				<value>aa</value>
+				<value>bb</value>
+				<value>cc</value>
+				<value>aa</value>
+				<value>cc</value>
+			</list>
+		</property>
+		<property name="map">
+			<map>
+				<entry key="一班" value="23"/>
+            	<entry key ="二班" value="21"/>
+			</map>
+		</property>
+		<property name="nameset">
+        <set>
+           	<value>aa</value>
+				<value>bb</value>
+				<value>cc</value>
+				<value>aa</value>
+				<value>cc</value>
+        </set>
+    	</property>
+    	<property name="props">
+        <props>
+            <prop key="一班">41</prop>
+            <prop key="二班">21</prop>
+        </props>
+    </property>
+	</bean>
+	
+	
+	<bean id="cd2" class="com.yc.bean.ConstructorDi"
+	 c:x="100" c:y="efg" c:apple-ref="apple" lazy-init="true">
+	</bean>
+	
+	
+	<bean id="favoriteBiz" class="com.yc.bean.FavoriteBiz" depends-on="tagDao,favoriteDao">
+		<property name="favoriteDao" ref="favoriteDao"></property>
+		<property name="tagDao" ref="tagDao"></property>
+	</bean>
+	
+	<bean id="tagDao" class="com.yc.bean.TagDao"></bean>
+	<bean id="favoriteDao" class="com.yc.bean.FavoriteDao"></bean>
+	<!--                                     多例模式 -->
+	<bean id="pear" class="com.yc.bean.Pear" scope="prototype"
+		init-method="init" destroy-method="destory"
+	></bean>
+	
+	<bean id="tagDaoSon" class="com.yc.bean.TagDaoSon"></bean>
+	
+	<bean id="favoriteBiz2" class="com.yc.bean.FavoriteBiz"
+	autowire="byName" depends-on="tagDao,favoriteDao">
+	</bean>
+	
+	
+</beans>
